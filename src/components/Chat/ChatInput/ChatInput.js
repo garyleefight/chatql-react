@@ -1,34 +1,57 @@
 import React, { Component } from 'react';
-import './ChatInput';
+import AuthContext from '../../../AuthContext';
+import { createMessage } from '../../../mutationHelper';
+import './ChatInput.css';
 
 class ChatInput extends Component {
-  render() {
-    return (
-        <div className="rounded p-2 mt-2 bg border border-dark rounded">
-            <div className="input-group">
-                <input type="text" className="form-control no-focus"
-                required placeholder="Type a Message"
-                id="message" name="message" onKeyUp={this.onKeyUp} />
-                <span className="input-group-btn">
-                <button className="btn btn-dark" onClick={this.createNewMessage} type="button">
-                    Send&nbsp;<i className='ion-chatbubble-working'></i>
-                </button>
-                </span>
+
+    static contextType = AuthContext;
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            text: ''
+        };
+    }
+
+    render() {
+        return (
+            <div className="rounded p-2 mt-2 bg border border-dark rounded">
+                <div className="input-group">
+                    <input 
+                        type="text" 
+                        className="form-control no-focus"
+                        required placeholder="Type a Message"
+                        value={this.state.text}
+                        onKeyUp={this.onKeyUp} 
+                        onChange={(e,t) => { this.setState({text: e.target.value}) }} 
+                    />
+                    <span className="input-group-btn">
+                    <button className="btn btn-dark" onClick={this.createNewMessage} type="button">
+                        Send&nbsp;<i className='ion-chatbubble-working'></i>
+                    </button>
+                    </span>
+                </div>
             </div>
-        </div>
-    );
-  }
+        );
+    }
 
-  createNewMessage = () => {
-      console.log(`Creating new message`);
-  }
+    createNewMessage = async () => {
+        const username = this.context.username;
+        await createMessage({
+            content: this.state.text,
+            authorId: username,
+            messageConversationId: this.props.conversation.id
+        });
+        this.setState({ text: '' });
+    }
 
-  onKeyUp = (e) => {
-      // enter
-      if (e.keyCode === 13) {
-          this.createNewMessage()
-      }
-  }
+    onKeyUp = (e) => {
+        // enter
+        if (e.keyCode === 13) {
+            this.createNewMessage()
+        }
+    }
 }
 
 export default ChatInput;

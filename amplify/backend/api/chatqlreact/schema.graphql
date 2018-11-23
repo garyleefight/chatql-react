@@ -1,0 +1,71 @@
+type User @model @auth(rules: [{ allow: owner, ownerField: "id", queries: [] }]) {
+  #  Generated id for a user. read-only
+  id: ID!
+  #  The username
+  username: String!
+  #  A user's enrolled Conversations. This is an interesting case. This is an interesting pagination case.
+  conversations(after: String, first: Int): [UserConversation] @connection(name: "UserConversations")
+  #  Get a users messages by querying a GSI on the Messages table.
+  messages(after: String, first: Int): [Message] @connection(name: "UserMessages")
+  # The creation timestamp.
+	createdAt: String
+  # The last updated timestamp.
+	updatedAt: String
+}
+
+type UserConversation @model(queries: null, subscriptions: null) {
+  id: ID!
+  user: User! @connection(name: "UserConversations")
+  userConversationUserId: ID
+  conversation: Conversation! @connection(name: "UserConversationConversations")
+  userConversationConversationId: ID!
+  # The creation timestamp.
+	createdAt: String
+  # The last updated timestamp.
+	updatedAt: String
+}
+
+type Conversation @model @auth(rules: [{ allow: owner, ownerField: "members" }]) {
+  #  A unique identifier for the Conversation.
+  id: ID!
+  #  The Conversation's messages.
+  messages(after: String, first: Int): [Message] @connection(name: "ConversationMessages")
+  #  The associated user conversations
+  userConversations: [UserConversation] @connection(name: "UserConversationConversations")
+  #  The Conversation's name.
+  name: String!
+  # The members in the conversation
+  members: [String!]!
+  # The creation timestamp.
+	createdAt: String
+  # The last updated timestamp.
+	updatedAt: String
+}
+
+type Message @model(subscriptions: null) @auth(rules: [{ allow: owner, ownerField: "authorId" }]) {
+  #  The author object. Note: `authorId` is only available because we list it in `extraAttributes` in `Conversation.messages`
+  author: User @connection(name: "UserMessages", keyField: "authorId")
+  authorId: String
+  #  The message content.
+  content: String!
+  #  The id of the Conversation this message belongs to. This is the table primary key.
+  conversation: Conversation! @connection(name: "ConversationMessages")
+  messageConversationId: ID!
+  #  Generated id for a message -- read-only
+  id: ID!
+  #  Flag denoting if this message has been accepted by the server or not.
+  isSent: Boolean
+  recipient: User
+  sender: String
+  # The creation timestamp.
+	createdAt: String
+  # The last updated timestamp.
+	updatedAt: String
+}
+
+type Subscription {
+  onCreateUserConversation(userConversationUserId: ID!): UserConversation
+    @aws_subscribe(mutations: ["createUserConversation"])
+  onCreateMessage(messageConversationId: ID!): Message
+    @aws_subscribe(mutations: ["createMessage"])
+}

@@ -15,13 +15,6 @@
   overflow-y: auto;
 }
 
-.convo-list {
-  height: auto;
-  max-height: 196px !important;
-  overflow-x: hidden !important;
-  overflow-y: auto;
-}
-
 .no-focus:focus {
   border-color: #ced4da !important;
   box-shadow: none;

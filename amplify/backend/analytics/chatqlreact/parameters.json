@@ -1,0 +1,20 @@
+{
+    "appName": "chatqlreact",
+    "roleName": "pinpointLambdaRole3440c81a",
+    "cloudWatchPolicyName": "cloudWatchPolicy3440c81a",
+    "pinpointPolicyName": "pinpointPolicy3440c81a",
+    "authPolicyName": "pinpoint_amplify_3440c81a",
+    "unauthPolicyName": "pinpoint_amplify_3440c81a",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authRoleArn": {
+        "Fn::GetAtt": [
+            "AuthRole",
+            "Arn"
+        ]
+    }
+}

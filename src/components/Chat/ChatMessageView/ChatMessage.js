@@ -2,16 +2,18 @@ import React, { Component } from 'react';
 
 class ChatMessage extends Component {
     render() {
-        const momentAgo = new Date().toTimeString();
+        const timeString = this.props.message.createdAt ?
+            new Date(this.props.message.createdAt).toLocaleTimeString() :
+            new Date().toLocaleTimeString();
         return (
             <div className={this.messageClassNames()}>
                 <div className="card-body p-2 border rounded">
                 <div className='clearfix'>
                     <h6 className={this.cardTitleClassNames()}>
-                        {this.props.message.user.username}
+                        {this.props.message.authorId}
                     </h6>
                 <div className='float-right'>
-                    <small className="card-subtitle mb-0 text-muted">{this.props.message.createdAt | momentAgo}</small>
+                    <small className="card-subtitle mb-0 text-muted">{timeString}</small>
                     &nbsp;
                     <i className={this.checkmarkClassNames()} data-pack="default" data-tags="talk"></i>
                 </div>
@@ -23,16 +25,23 @@ class ChatMessage extends Component {
     }
 
     messageClassNames = () => {
-        // [class.float-right]="fromMe"
-        // [class.border-primary]="fromMe"
-        // [class.border-success]="!fromMe">
-        return "card w-75 mb-2 chat-message float-right";
+        let classes = "card w-75 mb-2 chat-message";
+        if (this.props.isFromMe) {
+            classes += " float-right border-primary"
+        } else {
+            classes += " border-success"
+        }
+        return classes;
     }
 
     cardTitleClassNames = () => {
-        // [class.text-primary]="fromMe"
-        // [class.text-success]="!fromMe"
-        return "card-title mb-1 float-left text-primary text-success"
+        let classes = "card-title mb-1 float-left";
+        if (this.props.isFromMe) {
+            classes += " text-primary"
+        } else {
+            classes += " text-success"
+        }
+        return classes;
     }
 
     checkmarkClassNames = () => {
