@@ -10,10 +10,10 @@ export const OnCreateUser = `
 
 export const OnCreateUserConversation = `
   subscription OnCreateUserConversation($userId: ID!) {
-    onCreateUserConversation(userConversationUserId:$userId) {
+    onCreateConvoLink(convoLinkUserId:$userId) {
       id
-      userConversationUserId
-      userConversationConversationId
+      convoLinkUserId
+      convoLinkConversationId
       conversation {
         id
         name

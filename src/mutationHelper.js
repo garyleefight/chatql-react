@@ -24,13 +24,13 @@ export const createUser = async (user) => {
     }
 }
 
-export const createConversation = async (user1, user2) => {
+export const createConvo = async (user1, user2) => {
     try {
         const members = [user1, user2].sort()
         const conversationName = members.join(' and ');
         const conversationResponse = await API.graphql(
             graphqlOperation(
-                mutations.CreateConversation, { 
+                mutations.CreateConvo, { 
                     input: {
                         name: conversationName,
                         members
@@ -41,10 +41,10 @@ export const createConversation = async (user1, user2) => {
         assertErrors(conversationResponse);
         const userConversation1Response = await API.graphql(
             graphqlOperation(
-                mutations.CreateUserConversation, {
+                mutations.CreateConvoLink, {
                     input: {
-                        userConversationUserId: user1,
-                        userConversationConversationId: conversationResponse.data.createConversation.id
+                        convoLinkUserId: user1,
+                        convoLinkConversationId: conversationResponse.data.createConvo.id
                     }
                 }
             )
@@ -52,10 +52,10 @@ export const createConversation = async (user1, user2) => {
         assertErrors(userConversation1Response);
         const userConversation2Response = await API.graphql(
             graphqlOperation(
-                mutations.CreateUserConversation, {
+                mutations.CreateConvoLink, {
                     input: {
-                        userConversationUserId: user2,
-                        userConversationConversationId: conversationResponse.data.createConversation.id
+                        convoLinkUserId: user2,
+                        convoLinkConversationId: conversationResponse.data.createConvo.id
                     }
                 }
             )
@@ -63,7 +63,7 @@ export const createConversation = async (user1, user2) => {
         assertErrors(userConversation2Response);
     } catch (e) {
         Analytics.record({
-            name: 'CreateConversationError',
+            name: 'CreateConvoError',
             attributes: {
                 error: e.message
             }

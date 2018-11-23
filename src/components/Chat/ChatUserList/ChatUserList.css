@@ -6,10 +6,15 @@
 }
 
 .bg {
-    background-color: #e4e7eb;
+    background-color: #e6e6e6;
+}
+
+.list-group-item {
+    background-color: white;
 }
 
 .list-group-item:hover {
-    color: white;
-    background-color: gray;
+    color: rgb(73, 80, 87)!important;
+    background-color: #e6e6e6!important;
+    border-radius: 0;
 }

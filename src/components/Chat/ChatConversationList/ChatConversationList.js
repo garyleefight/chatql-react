@@ -12,7 +12,7 @@ class ChatConversationList extends Component {
         const username = this.context ? this.context.username : null;
         return (
             <div>
-                <div className="d-block font-weight-bold bg-dark text-white text-right rounded p-2">
+                <div className="section-header">
                     <h6 className='mb-0'><i className="ion-person-stalker" data-pack="default" data-tags="talk"></i> Conversations</h6>
                 </div>
                 <div className="convo-list">
@@ -24,9 +24,9 @@ class ChatConversationList extends Component {
                                 subscription={graphqlOperation(subscriptions.OnCreateUserConversation, {
                                     userId: username
                                 })}
-                                onSubscriptionMsg={(prev, { onCreateUserConversation }) => {
+                                onSubscriptionMsg={(prev, { onCreateConvoLink }) => {
                                     try {
-                                        prev.getUser.conversations.items.push(onCreateUserConversation);
+                                        prev.getUser.conversations.items.push(onCreateConvoLink);
                                     } catch (e) {
                                         console.log('Failed to merge user conversation subscription');
                                     }
@@ -62,7 +62,7 @@ class ChatConversationList extends Component {
     }
 
     conversationClassNames = (id) => {
-        return "list-group-item list-group-item-action p-2 border-0 bg active"
+        return "list-group-item list-group-item-action p-3 border-0"
     }
 }
 

@@ -779,525 +779,6 @@
             },
             "DependsOn": "GraphQLSchema"
         },
-        "UserConversationTable": {
-            "Type": "AWS::DynamoDB::Table",
-            "Properties": {
-                "TableName": {
-                    "Fn::If": [
-                        "HasEnvironmentParameter",
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "UserConversation",
-                                    {
-                                        "Fn::GetAtt": [
-                                            "GraphQLAPI",
-                                            "ApiId"
-                                        ]
-                                    },
-                                    {
-                                        "Ref": "env"
-                                    }
-                                ]
-                            ]
-                        },
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "UserConversation",
-                                    {
-                                        "Fn::GetAtt": [
-                                            "GraphQLAPI",
-                                            "ApiId"
-                                        ]
-                                    }
-                                ]
-                            ]
-                        }
-                    ]
-                },
-                "KeySchema": [
-                    {
-                        "AttributeName": "id",
-                        "KeyType": "HASH"
-                    }
-                ],
-                "AttributeDefinitions": [
-                    {
-                        "AttributeName": "id",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "userConversationUserId",
-                        "AttributeType": "S"
-                    },
-                    {
-                        "AttributeName": "userConversationConversationId",
-                        "AttributeType": "S"
-                    }
-                ],
-                "ProvisionedThroughput": {
-                    "ReadCapacityUnits": {
-                        "Ref": "DynamoDBModelTableReadIOPS"
-                    },
-                    "WriteCapacityUnits": {
-                        "Ref": "DynamoDBModelTableWriteIOPS"
-                    }
-                },
-                "StreamSpecification": {
-                    "StreamViewType": "NEW_AND_OLD_IMAGES"
-                },
-                "GlobalSecondaryIndexes": [
-                    {
-                        "IndexName": "gsi-UserConversations",
-                        "KeySchema": [
-                            {
-                                "AttributeName": "userConversationUserId",
-                                "KeyType": "HASH"
-                            }
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
-                        "ProvisionedThroughput": {
-                            "ReadCapacityUnits": {
-                                "Ref": "DynamoDBModelTableReadIOPS"
-                            },
-                            "WriteCapacityUnits": {
-                                "Ref": "DynamoDBModelTableWriteIOPS"
-                            }
-                        }
-                    },
-                    {
-                        "IndexName": "gsi-UserConversationConversations",
-                        "KeySchema": [
-                            {
-                                "AttributeName": "userConversationConversationId",
-                                "KeyType": "HASH"
-                            }
-                        ],
-                        "Projection": {
-                            "ProjectionType": "ALL"
-                        },
-                        "ProvisionedThroughput": {
-                            "ReadCapacityUnits": {
-                                "Ref": "DynamoDBModelTableReadIOPS"
-                            },
-                            "WriteCapacityUnits": {
-                                "Ref": "DynamoDBModelTableWriteIOPS"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        "UserConversationIAMRole": {
-            "Type": "AWS::IAM::Role",
-            "Properties": {
-                "RoleName": {
-                    "Fn::If": [
-                        "HasEnvironmentParameter",
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "UserConversationTable",
-                                    "role",
-                                    {
-                                        "Fn::GetAtt": [
-                                            "GraphQLAPI",
-                                            "ApiId"
-                                        ]
-                                    },
-                                    {
-                                        "Ref": "env"
-                                    }
-                                ]
-                            ]
-                        },
-                        {
-                            "Fn::Join": [
-                                "-",
-                                [
-                                    "UserConversationTable",
-                                    "role",
-                                    {
-                                        "Fn::GetAtt": [
-                                            "GraphQLAPI",
-                                            "ApiId"
-                                        ]
-                                    }
-                                ]
-                            ]
-                        }
-                    ]
-                },
-                "AssumeRolePolicyDocument": {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Effect": "Allow",
-                            "Principal": {
-                                "Service": "appsync.amazonaws.com"
-                            },
-                            "Action": "sts:AssumeRole"
-                        }
-                    ]
-                },
-                "Policies": [
-                    {
-                        "PolicyName": "DynamoDBAccess",
-                        "PolicyDocument": {
-                            "Version": "2012-10-17",
-                            "Statement": [
-                                {
-                                    "Effect": "Allow",
-                                    "Action": [
-                                        "dynamodb:BatchGetItem",
-                                        "dynamodb:BatchWriteItem",
-                                        "dynamodb:PutItem",
-                                        "dynamodb:DeleteItem",
-                                        "dynamodb:GetItem",
-                                        "dynamodb:Scan",
-                                        "dynamodb:Query",
-                                        "dynamodb:UpdateItem"
-                                    ],
-                                    "Resource": [
-                                        {
-                                            "Fn::GetAtt": [
-                                                "UserConversationTable",
-                                                "Arn"
-                                            ]
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                "/",
-                                                [
-                                                    {
-                                                        "Fn::GetAtt": [
-                                                            "UserConversationTable",
-                                                            "Arn"
-                                                        ]
-                                                    },
-                                                    "*"
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
-        "UserConversationDataSource": {
-            "Type": "AWS::AppSync::DataSource",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "Name": "UserConversationTable",
-                "Type": "AMAZON_DYNAMODB",
-                "ServiceRoleArn": {
-                    "Fn::GetAtt": [
-                        "UserConversationIAMRole",
-                        "Arn"
-                    ]
-                },
-                "DynamoDBConfig": {
-                    "AwsRegion": {
-                        "Fn::Select": [
-                            3,
-                            {
-                                "Fn::Split": [
-                                    ":",
-                                    {
-                                        "Fn::GetAtt": [
-                                            "UserConversationTable",
-                                            "Arn"
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    "TableName": {
-                        "Ref": "UserConversationTable"
-                    }
-                }
-            },
-            "DependsOn": "UserConversationIAMRole"
-        },
-        "CreateUserConversationResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "UserConversationDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "createUserConversation",
-                "TypeName": "Mutation",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "createUserConversation",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "createUserConversation",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
-        "UpdateUserConversationResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "UserConversationDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "updateUserConversation",
-                "TypeName": "Mutation",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "updateUserConversation",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "updateUserConversation",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
-        "DeleteUserConversationResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "UserConversationDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "deleteUserConversation",
-                "TypeName": "Mutation",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "deleteUserConversation",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "deleteUserConversation",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
         "ConversationTable": {
             "Type": "AWS::DynamoDB::Table",
             "Properties": {
@@ -1518,7 +999,7 @@
                         "Name"
                     ]
                 },
-                "FieldName": "getConversation",
+                "FieldName": "getConvo",
                 "TypeName": "Query",
                 "RequestMappingTemplateS3Location": {
                     "Fn::Join": [
@@ -1540,7 +1021,7 @@
                                                 ".",
                                                 [
                                                     "Query",
-                                                    "getConversation",
+                                                    "getConvo",
                                                     "request",
                                                     {
                                                         "Ref": "DeploymentTimestamp"
@@ -1574,95 +1055,7 @@
                                                 ".",
                                                 [
                                                     "Query",
-                                                    "getConversation",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
-        "ListConversationResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "ConversationDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "listConversations",
-                "TypeName": "Query",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Query",
-                                                    "listConversations",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Query",
-                                                    "listConversations",
+                                                    "getConvo",
                                                     "response",
                                                     {
                                                         "Ref": "DeploymentTimestamp"
@@ -1694,7 +1087,7 @@
                         "Name"
                     ]
                 },
-                "FieldName": "createConversation",
+                "FieldName": "createConvo",
                 "TypeName": "Mutation",
                 "RequestMappingTemplateS3Location": {
                     "Fn::Join": [
@@ -1716,7 +1109,7 @@
                                                 ".",
                                                 [
                                                     "Mutation",
-                                                    "createConversation",
+                                                    "createConvo",
                                                     "request",
                                                     {
                                                         "Ref": "DeploymentTimestamp"
@@ -1750,183 +1143,7 @@
                                                 ".",
                                                 [
                                                     "Mutation",
-                                                    "createConversation",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
-        "UpdateConversationResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "ConversationDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "updateConversation",
-                "TypeName": "Mutation",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "updateConversation",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "updateConversation",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
-        "DeleteConversationResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "ConversationDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "deleteConversation",
-                "TypeName": "Mutation",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "deleteConversation",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Mutation",
-                                                    "deleteConversation",
+                                                    "createConvo",
                                                     "response",
                                                     {
                                                         "Ref": "DeploymentTimestamp"
@@ -2000,6 +1217,10 @@
                     {
                         "AttributeName": "messageConversationId",
                         "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "createdAt",
+                        "AttributeType": "S"
                     }
                 ],
                 "ProvisionedThroughput": {
@@ -2035,11 +1256,15 @@
                         }
                     },
                     {
-                        "IndexName": "gsi-ConversationMessages",
+                        "IndexName": "gsi-ConvoMsgs",
                         "KeySchema": [
                             {
                                 "AttributeName": "messageConversationId",
                                 "KeyType": "HASH"
+                            },
+                            {
+                                "AttributeName": "createdAt",
+                                "KeyType": "RANGE"
                             }
                         ],
                         "Projection": {
@@ -2197,182 +1422,6 @@
                 }
             },
             "DependsOn": "MessageIAMRole"
-        },
-        "GetMessageResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "MessageDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "getMessage",
-                "TypeName": "Query",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Query",
-                                                    "getMessage",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Query",
-                                                    "getMessage",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
-        "ListMessageResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "MessageDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "listMessages",
-                "TypeName": "Query",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Query",
-                                                    "listMessages",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "Query",
-                                                    "listMessages",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
         },
         "CreateMessageResolver": {
             "Type": "AWS::AppSync::Resolver",
@@ -2638,6 +1687,437 @@
             },
             "DependsOn": "GraphQLSchema"
         },
+        "ConvoLinkTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+                "TableName": {
+                    "Fn::If": [
+                        "HasEnvironmentParameter",
+                        {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    "ConvoLink",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "GraphQLAPI",
+                                            "ApiId"
+                                        ]
+                                    },
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        },
+                        {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    "ConvoLink",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "GraphQLAPI",
+                                            "ApiId"
+                                        ]
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                "KeySchema": [
+                    {
+                        "AttributeName": "id",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "AttributeDefinitions": [
+                    {
+                        "AttributeName": "id",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "convoLinkUserId",
+                        "AttributeType": "S"
+                    },
+                    {
+                        "AttributeName": "convoLinkConversationId",
+                        "AttributeType": "S"
+                    }
+                ],
+                "ProvisionedThroughput": {
+                    "ReadCapacityUnits": {
+                        "Ref": "DynamoDBModelTableReadIOPS"
+                    },
+                    "WriteCapacityUnits": {
+                        "Ref": "DynamoDBModelTableWriteIOPS"
+                    }
+                },
+                "StreamSpecification": {
+                    "StreamViewType": "NEW_AND_OLD_IMAGES"
+                },
+                "GlobalSecondaryIndexes": [
+                    {
+                        "IndexName": "gsi-UserLinks",
+                        "KeySchema": [
+                            {
+                                "AttributeName": "convoLinkUserId",
+                                "KeyType": "HASH"
+                            }
+                        ],
+                        "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": {
+                                "Ref": "DynamoDBModelTableReadIOPS"
+                            },
+                            "WriteCapacityUnits": {
+                                "Ref": "DynamoDBModelTableWriteIOPS"
+                            }
+                        }
+                    },
+                    {
+                        "IndexName": "gsi-AssociatedLinks",
+                        "KeySchema": [
+                            {
+                                "AttributeName": "convoLinkConversationId",
+                                "KeyType": "HASH"
+                            }
+                        ],
+                        "Projection": {
+                            "ProjectionType": "ALL"
+                        },
+                        "ProvisionedThroughput": {
+                            "ReadCapacityUnits": {
+                                "Ref": "DynamoDBModelTableReadIOPS"
+                            },
+                            "WriteCapacityUnits": {
+                                "Ref": "DynamoDBModelTableWriteIOPS"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        "ConvoLinkIAMRole": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": {
+                    "Fn::If": [
+                        "HasEnvironmentParameter",
+                        {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    "ConvoLinkTable",
+                                    "role",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "GraphQLAPI",
+                                            "ApiId"
+                                        ]
+                                    },
+                                    {
+                                        "Ref": "env"
+                                    }
+                                ]
+                            ]
+                        },
+                        {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    "ConvoLinkTable",
+                                    "role",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "GraphQLAPI",
+                                            "ApiId"
+                                        ]
+                                    }
+                                ]
+                            ]
+                        }
+                    ]
+                },
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": "appsync.amazonaws.com"
+                            },
+                            "Action": "sts:AssumeRole"
+                        }
+                    ]
+                },
+                "Policies": [
+                    {
+                        "PolicyName": "DynamoDBAccess",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "dynamodb:BatchGetItem",
+                                        "dynamodb:BatchWriteItem",
+                                        "dynamodb:PutItem",
+                                        "dynamodb:DeleteItem",
+                                        "dynamodb:GetItem",
+                                        "dynamodb:Scan",
+                                        "dynamodb:Query",
+                                        "dynamodb:UpdateItem"
+                                    ],
+                                    "Resource": [
+                                        {
+                                            "Fn::GetAtt": [
+                                                "ConvoLinkTable",
+                                                "Arn"
+                                            ]
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                "/",
+                                                [
+                                                    {
+                                                        "Fn::GetAtt": [
+                                                            "ConvoLinkTable",
+                                                            "Arn"
+                                                        ]
+                                                    },
+                                                    "*"
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "ConvoLinkDataSource": {
+            "Type": "AWS::AppSync::DataSource",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "Name": "ConvoLinkTable",
+                "Type": "AMAZON_DYNAMODB",
+                "ServiceRoleArn": {
+                    "Fn::GetAtt": [
+                        "ConvoLinkIAMRole",
+                        "Arn"
+                    ]
+                },
+                "DynamoDBConfig": {
+                    "AwsRegion": {
+                        "Fn::Select": [
+                            3,
+                            {
+                                "Fn::Split": [
+                                    ":",
+                                    {
+                                        "Fn::GetAtt": [
+                                            "ConvoLinkTable",
+                                            "Arn"
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "TableName": {
+                        "Ref": "ConvoLinkTable"
+                    }
+                }
+            },
+            "DependsOn": "ConvoLinkIAMRole"
+        },
+        "CreateConvoLinkResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "ConvoLinkDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "createConvoLink",
+                "TypeName": "Mutation",
+                "RequestMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "Mutation",
+                                                    "createConvoLink",
+                                                    "request",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                },
+                "ResponseMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "Mutation",
+                                                    "createConvoLink",
+                                                    "response",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                }
+            },
+            "DependsOn": "GraphQLSchema"
+        },
+        "UpdateConvoLinkResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "ConvoLinkDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "updateConvoLink",
+                "TypeName": "Mutation",
+                "RequestMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "Mutation",
+                                                    "updateConvoLink",
+                                                    "request",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                },
+                "ResponseMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "Mutation",
+                                                    "updateConvoLink",
+                                                    "response",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                }
+            },
+            "DependsOn": "GraphQLSchema"
+        },
         "UserconversationsResolver": {
             "Type": "AWS::AppSync::Resolver",
             "Properties": {
@@ -2649,7 +2129,7 @@
                 },
                 "DataSourceName": {
                     "Fn::GetAtt": [
-                        "UserConversationDataSource",
+                        "ConvoLinkDataSource",
                         "Name"
                     ]
                 },
@@ -2814,182 +2294,6 @@
             },
             "DependsOn": "GraphQLSchema"
         },
-        "UserConversationuserResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "UserDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "user",
-                "TypeName": "UserConversation",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "UserConversation",
-                                                    "user",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "UserConversation",
-                                                    "user",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
-        "UserConversationconversationResolver": {
-            "Type": "AWS::AppSync::Resolver",
-            "Properties": {
-                "ApiId": {
-                    "Fn::GetAtt": [
-                        "GraphQLAPI",
-                        "ApiId"
-                    ]
-                },
-                "DataSourceName": {
-                    "Fn::GetAtt": [
-                        "ConversationDataSource",
-                        "Name"
-                    ]
-                },
-                "FieldName": "conversation",
-                "TypeName": "UserConversation",
-                "RequestMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "UserConversation",
-                                                    "conversation",
-                                                    "request",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                },
-                "ResponseMappingTemplateS3Location": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "s3://",
-                            {
-                                "Fn::Join": [
-                                    "/",
-                                    [
-                                        {
-                                            "Ref": "ResolverBucket"
-                                        },
-                                        {
-                                            "Ref": "ResolverRootKey"
-                                        },
-                                        {
-                                            "Fn::Join": [
-                                                ".",
-                                                [
-                                                    "UserConversation",
-                                                    "conversation",
-                                                    "response",
-                                                    {
-                                                        "Ref": "DeploymentTimestamp"
-                                                    }
-                                                ]
-                                            ]
-                                        }
-                                    ]
-                                ]
-                            }
-                        ]
-                    ]
-                }
-            },
-            "DependsOn": "GraphQLSchema"
-        },
         "ConversationmessagesResolver": {
             "Type": "AWS::AppSync::Resolver",
             "Properties": {
@@ -3078,7 +2382,7 @@
             },
             "DependsOn": "GraphQLSchema"
         },
-        "ConversationuserConversationsResolver": {
+        "ConversationassociatedResolver": {
             "Type": "AWS::AppSync::Resolver",
             "Properties": {
                 "ApiId": {
@@ -3089,11 +2393,11 @@
                 },
                 "DataSourceName": {
                     "Fn::GetAtt": [
-                        "UserConversationDataSource",
+                        "ConvoLinkDataSource",
                         "Name"
                     ]
                 },
-                "FieldName": "userConversations",
+                "FieldName": "associated",
                 "TypeName": "Conversation",
                 "RequestMappingTemplateS3Location": {
                     "Fn::Join": [
@@ -3115,7 +2419,7 @@
                                                 ".",
                                                 [
                                                     "Conversation",
-                                                    "userConversations",
+                                                    "associated",
                                                     "request",
                                                     {
                                                         "Ref": "DeploymentTimestamp"
@@ -3149,7 +2453,7 @@
                                                 ".",
                                                 [
                                                     "Conversation",
-                                                    "userConversations",
+                                                    "associated",
                                                     "response",
                                                     {
                                                         "Ref": "DeploymentTimestamp"
@@ -3325,6 +2629,182 @@
                                                 ".",
                                                 [
                                                     "Message",
+                                                    "conversation",
+                                                    "response",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                }
+            },
+            "DependsOn": "GraphQLSchema"
+        },
+        "ConvoLinkuserResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "UserDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "user",
+                "TypeName": "ConvoLink",
+                "RequestMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "ConvoLink",
+                                                    "user",
+                                                    "request",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                },
+                "ResponseMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "ConvoLink",
+                                                    "user",
+                                                    "response",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                }
+            },
+            "DependsOn": "GraphQLSchema"
+        },
+        "ConvoLinkconversationResolver": {
+            "Type": "AWS::AppSync::Resolver",
+            "Properties": {
+                "ApiId": {
+                    "Fn::GetAtt": [
+                        "GraphQLAPI",
+                        "ApiId"
+                    ]
+                },
+                "DataSourceName": {
+                    "Fn::GetAtt": [
+                        "ConversationDataSource",
+                        "Name"
+                    ]
+                },
+                "FieldName": "conversation",
+                "TypeName": "ConvoLink",
+                "RequestMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "ConvoLink",
+                                                    "conversation",
+                                                    "request",
+                                                    {
+                                                        "Ref": "DeploymentTimestamp"
+                                                    }
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                ]
+                            }
+                        ]
+                    ]
+                },
+                "ResponseMappingTemplateS3Location": {
+                    "Fn::Join": [
+                        "",
+                        [
+                            "s3://",
+                            {
+                                "Fn::Join": [
+                                    "/",
+                                    [
+                                        {
+                                            "Ref": "ResolverBucket"
+                                        },
+                                        {
+                                            "Ref": "ResolverRootKey"
+                                        },
+                                        {
+                                            "Fn::Join": [
+                                                ".",
+                                                [
+                                                    "ConvoLink",
                                                     "conversation",
                                                     "response",
                                                     {

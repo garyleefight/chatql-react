@@ -37,13 +37,13 @@ export const GetUserAndConversations = `
   }
 `
 
-export const GetConversation = `
-  query GetConversation($id: ID!) {
-    getConversation(id:$id) {
+export const GetConvo = `
+  query GetConvo($id: ID!) {
+    getConvo(id:$id) {
       id
       name
       members
-      messages {
+      messages(limit: 100) {
         items {
           id
           content

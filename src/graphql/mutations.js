@@ -5,12 +5,12 @@ export const CreateUser = `mutation CreateUser($user: CreateUserInput!) {
     }
 }`
 
-export const CreateUserConversation = `
-  mutation CreateUserConversation($input: CreateUserConversationInput!) {
-    createUserConversation(input: $input) {
+export const CreateConvoLink = `
+  mutation CreateConvoLink($input: CreateConvoLinkInput!) {
+    createConvoLink(input: $input) {
       id
-      userConversationUserId
-      userConversationConversationId
+      convoLinkUserId
+      convoLinkConversationId
       conversation {
         id
         name
@@ -19,9 +19,9 @@ export const CreateUserConversation = `
   }
 `
 
-export const CreateConversation = `
-  mutation CreateConversation($input: CreateConversationInput!) {
-    createConversation(input: $input) {
+export const CreateConvo = `
+  mutation CreateConvo($input: CreateConversationInput!) {
+    createConvo(input: $input) {
       id
       name
       members

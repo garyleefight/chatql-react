@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { graphqlOperation } from 'aws-amplify';
 import { Connect } from 'aws-amplify-react';
+import { Scrollbars } from 'react-custom-scrollbars'
 import AuthContext from '../../../AuthContext';
 import * as queries from '../../../graphql/queries';
 import * as subscriptions from '../../../graphql/subscriptions';
@@ -9,25 +10,48 @@ import ChatMessage from './ChatMessage';
 
 class ChatMessageView extends Component {
     static contextType = AuthContext;
+
+    scrollbarsRef = React.createRef()
+
+    scrollToBottom = () => {
+        if (this.scrollbarsRef && this.scrollbarsRef.current) {
+            this.scrollbarsRef.current.scrollToBottom()
+        }
+    }
+      
+    componentDidMount = () => {
+        this.scrollToBottom();
+    }
+    
+    componentDidUpdate = () => {
+        console.log('Updating');
+        this.scrollToBottom();
+    }
+
     render() {
         const username = this.context ? this.context.username : null
         return (
-            <div className="bg rounded p-2 border border-dark rounded">
-                <div className="p-0 bg">
-                    <span className="d-block font-weight-bold bg-dark text-white text-right rounded p-2 mb-2">
-                    <i className="ion-chatbubbles" data-pack="default" data-tags="talk"></i> {this.props.conversation ? this.props.conversation.name : 'Select a conversation'}
-                    </span>
-                    <div className="chat"> {/* [appInfscroll]="loadMoreMessages" [completedFetching]="completedFetching" */}
-                    {
-                        this.props.conversation ?
+            <div className="chat-message-view"> 
+                <div className="chat-message-view-header">
+                    {this.props.conversation ? this.props.conversation.name : 'Select a conversation'}
+                </div>
+                <div className="chat" ref={this.messagesContainer}>
+                {
+                    this.props.conversation ?
+                    <Scrollbars
+                        autoHide
+                        autoHideTimeout={1000}
+                        autoHideDuration={200}
+                        ref={this.scrollbarsRef}
+                    >
                         <Connect
-                            query={graphqlOperation(queries.GetConversation, { id: this.props.conversation.id })}
+                            query={graphqlOperation(queries.GetConvo, { id: this.props.conversation.id })}
                             subscription={graphqlOperation(subscriptions.OnCreateMessage, {
                                 conversationId: this.props.conversation.id
                             })}
                             onSubscriptionMsg={(prev, { onCreateMessage }) => {
                                 try {
-                                    prev.getConversation.messages.items.push(onCreateMessage);
+                                    prev.getConvo.messages.items.push(onCreateMessage);
                                 } catch (e) {
                                     console.log('Failed to merge user conversation subscription');
                                 }
@@ -35,29 +59,26 @@ class ChatMessageView extends Component {
                             }}
                         >
                             {({ data, loading, error }) => {
-                                const { getConversation } = data || { }
+                                const { getConvo } = data || { }
                                 if (error) return (<h3>Error: {error}</h3>);
                                 let messages;
                                 try {
-                                    messages = getConversation.messages.items;
+                                    messages = getConvo.messages.items;
                                 } catch (e) {
                                     messages = [];
                                 }
                                 if (loading || !messages) return (<h3>Loading...</h3>);
-                                return messages.map((message, i) => (
-                                    <ChatMessage key={i} message={message} isFromMe={message.authorId === username} />
-                                ))
+                                return <div>
+                                    {
+                                        messages.map((message, i) => (
+                                            <ChatMessage key={i} message={message} isFromMe={message.authorId === username} />
+                                        ))
+                                    }
+                                </div>
                             }}
-                        </Connect> : null
-                    }
-                    {/* <app-chat-message *ngFor="let message of messages; last as isLast; first as isFirst"
-                    [message]="message"
-                    [fromMe]="fromMe(message)"
-                    [isLast]="isLast"
-                    [isFirst]="isFirst"
-                    (added)="messageAdded(isFirst, $event)"
-                    ></app-chat-message> */}
-                    </div>
+                        </Connect>
+                    </Scrollbars> : null
+                }
                 </div>
             </div>
         );

@@ -46,14 +46,13 @@ class App extends Component {
       <AuthContext.Provider value={this.state.currentUser}>
         <Router>
           <div className="App">
-            <AppNav isLoggedIn={Boolean(this.state.currentUser)} onSignOut={this.onSignOut} />
+            <AppNav loggedInUser={this.state.currentUser} onSignOut={this.onSignOut} />
             <Route 
               exact 
               path="/"
               render={() => <Home onLogin={this.updateCurrentUser} />} 
             />
             <Route path="/chat" component={Chat} />
-            <AppFooter />
           </div>
         </Router>
       </AuthContext.Provider>

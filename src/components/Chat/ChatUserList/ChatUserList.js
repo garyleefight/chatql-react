@@ -4,7 +4,7 @@ import { Connect } from "aws-amplify-react";
 import AuthContext from '../../../AuthContext';
 import * as queries from '../../../graphql/queries';
 import * as subscriptions from '../../../graphql/subscriptions';
-import { createConversation } from '../../../mutationHelper';
+import { createConvo } from '../../../mutationHelper';
 import './ChatUserList.css';
 
 class ChatUserList extends Component {
@@ -13,11 +13,11 @@ class ChatUserList extends Component {
         const username = this.context ? this.context.username : null;
         return (
             <div>
-                <div className="d-block font-weight-bold bg-dark text-white text-right rounded p-2">
+                <div className="section-header">
                     <h6 className='mb-0'><i className="ion-ios-person" data-pack="default" data-tags="talk" /> Users</h6>
                 </div>
                 <div className="user-list">
-                    <div className="list-group mb-2">
+                    <div className="list-group">
                         <Connect
                             query={graphqlOperation(queries.ListUsers)}
                             subscription={graphqlOperation(subscriptions.OnCreateUser)}
@@ -45,7 +45,7 @@ class ChatUserList extends Component {
                                 return validUsers.map((user, i) => (
                                     <a href='#'
                                         key={i}
-                                        className="list-group-item list-group-item-action p-2 border-0 bg"
+                                        className="list-group-item list-group-item-action p-3 border-0"
                                         onClick={() => this.createNewConversation(user)}>
                                         {user.username}
                                     </a>
@@ -59,7 +59,7 @@ class ChatUserList extends Component {
     }
 
     createNewConversation = async (user) => {
-        await createConversation(user.username, this.context.username)
+        await createConvo(user.username, this.context.username)
     }
 }
 

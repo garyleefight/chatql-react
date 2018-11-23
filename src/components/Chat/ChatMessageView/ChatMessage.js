@@ -29,7 +29,7 @@ class ChatMessage extends Component {
         if (this.props.isFromMe) {
             classes += " float-right border-primary"
         } else {
-            classes += " border-success"
+            classes += " border-neutral"
         }
         return classes;
     }
@@ -39,7 +39,7 @@ class ChatMessage extends Component {
         if (this.props.isFromMe) {
             classes += " text-primary"
         } else {
-            classes += " text-success"
+            classes += " text-neutral"
         }
         return classes;
     }

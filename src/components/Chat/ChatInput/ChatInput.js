@@ -16,7 +16,7 @@ class ChatInput extends Component {
 
     render() {
         return (
-            <div className="rounded p-2 mt-2 bg border border-dark rounded">
+            <div className="chat-input">
                 <div className="input-group">
                     <input 
                         type="text" 

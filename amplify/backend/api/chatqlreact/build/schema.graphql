@@ -1,18 +1,8 @@
 type User {
   id: ID!
   username: String!
-  conversations(filter: ModelUserConversationFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelUserConversationConnection
+  conversations(filter: ModelConvoLinkFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConvoLinkConnection
   messages(filter: ModelMessageFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelMessageConnection
-  createdAt: String
-  updatedAt: String
-}
-
-type UserConversation {
-  id: ID!
-  user: User!
-  userConversationUserId: ID
-  conversation: Conversation!
-  userConversationConversationId: ID!
   createdAt: String
   updatedAt: String
 }
@@ -20,7 +10,7 @@ type UserConversation {
 type Conversation {
   id: ID!
   messages(filter: ModelMessageFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelMessageConnection
-  userConversations(filter: ModelUserConversationFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelUserConversationConnection
+  associated(filter: ModelConvoLinkFilterInput, sortDirection: ModelSortDirection, limit: Int, nextToken: String): ModelConvoLinkConnection
   name: String!
   members: [String!]!
   createdAt: String
@@ -28,28 +18,32 @@ type Conversation {
 }
 
 type Message {
+  id: ID!
   author: User
   authorId: String
   content: String!
   conversation: Conversation!
   messageConversationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+type ConvoLink {
   id: ID!
-  isSent: Boolean
-  recipient: User
-  sender: String
+  user: User!
+  convoLinkUserId: ID
+  conversation: Conversation!
+  convoLinkConversationId: ID!
   createdAt: String
   updatedAt: String
 }
 
 type Subscription {
-  onCreateUserConversation(userConversationUserId: ID!): UserConversation @aws_subscribe(mutations: ["createUserConversation"])
+  onCreateConvoLink(convoLinkUserId: ID!): ConvoLink @aws_subscribe(mutations: ["createConvoLink"])
   onCreateMessage(messageConversationId: ID!): Message @aws_subscribe(mutations: ["createMessage"])
   onCreateUser: User @aws_subscribe(mutations: ["createUser"])
   onUpdateUser: User @aws_subscribe(mutations: ["updateUser"])
   onDeleteUser: User @aws_subscribe(mutations: ["deleteUser"])
-  onCreateConversation: Conversation @aws_subscribe(mutations: ["createConversation"])
-  onUpdateConversation: Conversation @aws_subscribe(mutations: ["updateConversation"])
-  onDeleteConversation: Conversation @aws_subscribe(mutations: ["deleteConversation"])
 }
 
 enum ModelSortDirection {
@@ -130,10 +124,7 @@ input ModelUserFilterInput {
 type Query {
   getUser(id: ID!): User
   listUsers(filter: ModelUserFilterInput, limit: Int, nextToken: String): ModelUserConnection
-  getConversation(id: ID!): Conversation
-  listConversations(filter: ModelConversationFilterInput, limit: Int, nextToken: String): ModelConversationConnection
-  getMessage(id: ID!): Message
-  listMessages(filter: ModelMessageFilterInput, limit: Int, nextToken: String): ModelMessageConnection
+  getConvo(id: ID!): Conversation
 }
 
 input CreateUserInput {
@@ -158,51 +149,12 @@ type Mutation {
   createUser(input: CreateUserInput!): User
   updateUser(input: UpdateUserInput!): User
   deleteUser(input: DeleteUserInput!): User
-  createUserConversation(input: CreateUserConversationInput!): UserConversation
-  updateUserConversation(input: UpdateUserConversationInput!): UserConversation
-  deleteUserConversation(input: DeleteUserConversationInput!): UserConversation
-  createConversation(input: CreateConversationInput!): Conversation
-  updateConversation(input: UpdateConversationInput!): Conversation
-  deleteConversation(input: DeleteConversationInput!): Conversation
+  createConvo(input: CreateConversationInput!): Conversation
   createMessage(input: CreateMessageInput!): Message
   updateMessage(input: UpdateMessageInput!): Message
   deleteMessage(input: DeleteMessageInput!): Message
-}
-
-input CreateUserConversationInput {
-  id: ID
-  userConversationUserId: ID
-  userConversationConversationId: ID!
-  createdAt: String
-  updatedAt: String
-}
-
-input UpdateUserConversationInput {
-  id: ID!
-  userConversationUserId: ID
-  userConversationConversationId: ID
-  createdAt: String
-  updatedAt: String
-}
-
-input DeleteUserConversationInput {
-  id: ID
-}
-
-type ModelConversationConnection {
-  items: [Conversation]
-  nextToken: String
-}
-
-input ModelConversationFilterInput {
-  id: ModelIDFilterInput
-  name: ModelStringFilterInput
-  members: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
-  and: [ModelConversationFilterInput]
-  or: [ModelConversationFilterInput]
-  not: ModelConversationFilterInput
+  createConvoLink(input: CreateConvoLinkInput!): ConvoLink
+  updateConvoLink(input: UpdateConvoLinkInput!): ConvoLink
 }
 
 input CreateConversationInput {
@@ -225,43 +177,20 @@ input DeleteConversationInput {
   id: ID
 }
 
-type ModelMessageConnection {
-  items: [Message]
-  nextToken: String
-}
-
-input ModelMessageFilterInput {
-  authorId: ModelStringFilterInput
-  content: ModelStringFilterInput
-  messageConversationId: ModelIDFilterInput
-  id: ModelIDFilterInput
-  isSent: ModelBooleanFilterInput
-  sender: ModelStringFilterInput
-  createdAt: ModelStringFilterInput
-  updatedAt: ModelStringFilterInput
-  and: [ModelMessageFilterInput]
-  or: [ModelMessageFilterInput]
-  not: ModelMessageFilterInput
-}
-
 input CreateMessageInput {
+  id: ID
   authorId: String
   content: String!
   messageConversationId: ID!
-  id: ID
-  isSent: Boolean
-  sender: String
   createdAt: String
   updatedAt: String
 }
 
 input UpdateMessageInput {
+  id: ID!
   authorId: String
   content: String
   messageConversationId: ID
-  id: ID!
-  isSent: Boolean
-  sender: String
   createdAt: String
   updatedAt: String
 }
@@ -270,18 +199,55 @@ input DeleteMessageInput {
   id: ID
 }
 
-type ModelUserConversationConnection {
-  items: [UserConversation]
+input CreateConvoLinkInput {
+  id: ID
+  convoLinkUserId: ID
+  convoLinkConversationId: ID!
+  createdAt: String
+  updatedAt: String
+}
+
+input UpdateConvoLinkInput {
+  id: ID!
+  convoLinkUserId: ID
+  convoLinkConversationId: ID
+  createdAt: String
+  updatedAt: String
+}
+
+input DeleteConvoLinkInput {
+  id: ID
+}
+
+type ModelConvoLinkConnection {
+  items: [ConvoLink]
   nextToken: String
 }
 
-input ModelUserConversationFilterInput {
+input ModelConvoLinkFilterInput {
   id: ModelIDFilterInput
-  userConversationUserId: ModelIDFilterInput
-  userConversationConversationId: ModelIDFilterInput
+  convoLinkUserId: ModelIDFilterInput
+  convoLinkConversationId: ModelIDFilterInput
   createdAt: ModelStringFilterInput
   updatedAt: ModelStringFilterInput
-  and: [ModelUserConversationFilterInput]
-  or: [ModelUserConversationFilterInput]
-  not: ModelUserConversationFilterInput
+  and: [ModelConvoLinkFilterInput]
+  or: [ModelConvoLinkFilterInput]
+  not: ModelConvoLinkFilterInput
+}
+
+type ModelMessageConnection {
+  items: [Message]
+  nextToken: String
+}
+
+input ModelMessageFilterInput {
+  id: ModelIDFilterInput
+  authorId: ModelStringFilterInput
+  content: ModelStringFilterInput
+  messageConversationId: ModelIDFilterInput
+  createdAt: ModelStringFilterInput
+  updatedAt: ModelStringFilterInput
+  and: [ModelMessageFilterInput]
+  or: [ModelMessageFilterInput]
+  not: ModelMessageFilterInput
 }

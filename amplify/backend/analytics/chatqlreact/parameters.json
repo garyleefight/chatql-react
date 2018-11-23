@@ -1,10 +1,10 @@
 {
     "appName": "chatqlreact",
-    "roleName": "pinpointLambdaRole3440c81a",
-    "cloudWatchPolicyName": "cloudWatchPolicy3440c81a",
-    "pinpointPolicyName": "pinpointPolicy3440c81a",
-    "authPolicyName": "pinpoint_amplify_3440c81a",
-    "unauthPolicyName": "pinpoint_amplify_3440c81a",
+    "roleName": "pinpointLambdaRoleb9ce05bf",
+    "cloudWatchPolicyName": "cloudWatchPolicyb9ce05bf",
+    "pinpointPolicyName": "pinpointPolicyb9ce05bf",
+    "authPolicyName": "pinpoint_amplify_b9ce05bf",
+    "unauthPolicyName": "pinpoint_amplify_b9ce05bf",
     "authRoleName": {
         "Ref": "AuthRoleName"
     },
