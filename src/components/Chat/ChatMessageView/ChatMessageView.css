@@ -1,0 +1,9 @@
+.chat {
+    overflow-x: hidden !important;
+    overflow-y: auto;
+    height: 60vh !important;
+}
+
+.bg {
+    background-color: #e4e7eb;
+}
