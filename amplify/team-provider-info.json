@@ -1,19 +1,36 @@
 {
-	"sandbox": {
-		"awscloudformation": {
-			"AuthRoleName": "chatql-react-20181123145523-authRole",
-			"UnauthRoleArn": "arn:aws:iam::158820598885:role/chatql-react-20181123145523-unauthRole",
-			"AuthRoleArn": "arn:aws:iam::158820598885:role/chatql-react-20181123145523-authRole",
-			"Region": "us-west-2",
-			"DeploymentBucketName": "chatql-react-20181123145523-deployment",
-			"UnauthRoleName": "chatql-react-20181123145523-unauthRole",
-			"StackName": "chatql-react-20181123145523",
-			"StackId": "arn:aws:cloudformation:us-west-2:158820598885:stack/chatql-react-20181123145523/dcb2b690-ef72-11e8-a26d-0a97e291c068"
-		},
-		"categories": {
-			"auth": {
-				"cognito1dccd7dc": {}
-			}
-		}
-	}
+    "sandbox": {
+        "awscloudformation": {
+            "AuthRoleName": "chatql-react-20181123145523-authRole",
+            "UnauthRoleArn": "arn:aws:iam::158820598885:role/chatql-react-20181123145523-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::158820598885:role/chatql-react-20181123145523-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "chatql-react-20181123145523-deployment",
+            "UnauthRoleName": "chatql-react-20181123145523-unauthRole",
+            "StackName": "chatql-react-20181123145523",
+            "StackId": "arn:aws:cloudformation:us-west-2:158820598885:stack/chatql-react-20181123145523/dcb2b690-ef72-11e8-a26d-0a97e291c068"
+        },
+        "categories": {
+            "auth": {
+                "cognito1dccd7dc": {}
+            }
+        }
+    },
+    "local": {
+        "awscloudformation": {
+            "AuthRoleName": "chatql-react-20181124085211-authRole",
+            "UnauthRoleArn": "arn:aws:iam::033205456844:role/chatql-react-20181124085211-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::033205456844:role/chatql-react-20181124085211-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "chatql-react-20181124085211-deployment",
+            "UnauthRoleName": "chatql-react-20181124085211-unauthRole",
+            "StackName": "chatql-react-20181124085211",
+            "StackId": "arn:aws:cloudformation:us-west-2:033205456844:stack/chatql-react-20181124085211/45e668a0-f009-11e8-881b-50a68d01a629"
+        },
+        "categories": {
+            "auth": {
+                "cognito1dccd7dc": {}
+            }
+        }
+    }
 }

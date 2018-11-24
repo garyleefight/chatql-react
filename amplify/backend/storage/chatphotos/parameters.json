@@ -1,0 +1,13 @@
+{
+    "bucketName": "chatphotos",
+    "authPolicyName": "s3_amplify_33eb7be0",
+    "unauthPolicyName": "s3_amplify_33eb7be0",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authPermissions": "rw",
+    "unauthPermissions": "r"
+}

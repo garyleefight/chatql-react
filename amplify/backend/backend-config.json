@@ -19,5 +19,11 @@
 				"securityType": "AMAZON_COGNITO_USER_POOLS"
 			}
 		}
+	},
+	"storage": {
+		"chatphotos": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation"
+		}
 	}
 }

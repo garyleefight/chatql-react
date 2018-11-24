@@ -81,7 +81,7 @@
 		"authcognito1dccd7dc": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181123145523-deployment/amplify-cfn-templates/auth/cognito1dccd7dc-cloudformation-template.yml",
+				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181124085211-deployment/amplify-cfn-templates/auth/cognito1dccd7dc-cloudformation-template.yml",
 				"Parameters": {
 					"identityPoolName": "cognito1dccd7dc_identitypool_1dccd7dc",
 					"allowUnauthenticatedIdentities": true,
@@ -139,14 +139,14 @@
 							"Arn"
 						]
 					},
-					"env": "sandbox"
+					"env": "local"
 				}
 			}
 		},
 		"analyticschatqlreact": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181123145523-deployment/amplify-cfn-templates/analytics/pinpoint-cloudformation-template.json",
+				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181124085211-deployment/amplify-cfn-templates/analytics/pinpoint-cloudformation-template.json",
 				"Parameters": {
 					"appName": "chatqlreact",
 					"roleName": "pinpointLambdaRoleb9ce05bf",
@@ -166,14 +166,14 @@
 							"Arn"
 						]
 					},
-					"env": "sandbox"
+					"env": "local"
 				}
 			}
 		},
 		"apichatqlreact": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181123145523-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181124085211-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"Parameters": {
 					"AppSyncApiName": "chatqlreact",
 					"AuthCognitoUserPoolId": {
@@ -182,11 +182,31 @@
 							"Outputs.UserPoolId"
 						]
 					},
-					"schemaGraphql": "s3://chatql-react-20181123145523-deployment/amplify-appsync-files/schema.graphql.1543013823739",
-					"ResolverBucket": "chatql-react-20181123145523-deployment",
+					"schemaGraphql": "s3://chatql-react-20181124085211-deployment/amplify-appsync-files/schema.graphql.1543078552375",
+					"ResolverBucket": "chatql-react-20181124085211-deployment",
 					"ResolverRootKey": "amplify-appsync-files",
-					"DeploymentTimestamp": "1543013823739",
-					"env": "sandbox"
+					"DeploymentTimestamp": "1543078552375",
+					"env": "local"
+				}
+			}
+		},
+		"storagechatphotos": {
+			"Type": "AWS::CloudFormation::Stack",
+			"Properties": {
+				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181124085211-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+				"Parameters": {
+					"bucketName": "chatphotos",
+					"authPolicyName": "s3_amplify_33eb7be0",
+					"unauthPolicyName": "s3_amplify_33eb7be0",
+					"authRoleName": {
+						"Ref": "AuthRoleName"
+					},
+					"unauthRoleName": {
+						"Ref": "UnauthRoleName"
+					},
+					"authPermissions": "rw",
+					"unauthPermissions": "r",
+					"env": "local"
 				}
 			}
 		}
