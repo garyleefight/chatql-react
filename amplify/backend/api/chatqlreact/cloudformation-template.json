@@ -337,10 +337,7 @@
                     }
                 }
             },
-            "DependsOn": [
-                "UserTable",
-                "UserIAMRole"
-            ]
+            "DependsOn": "UserIAMRole"
         },
         "GetUserResolver": {
             "Type": "AWS::AppSync::Resolver",
@@ -985,10 +982,7 @@
                     }
                 }
             },
-            "DependsOn": [
-                "ConversationTable",
-                "ConversationIAMRole"
-            ]
+            "DependsOn": "ConversationIAMRole"
         },
         "GetConversationResolver": {
             "Type": "AWS::AppSync::Resolver",
@@ -1427,10 +1421,7 @@
                     }
                 }
             },
-            "DependsOn": [
-                "MessageTable",
-                "MessageIAMRole"
-            ]
+            "DependsOn": "MessageIAMRole"
         },
         "CreateMessageResolver": {
             "Type": "AWS::AppSync::Resolver",
@@ -1949,10 +1940,7 @@
                     }
                 }
             },
-            "DependsOn": [
-                "ConvoLinkTable",
-                "ConvoLinkIAMRole"
-            ]
+            "DependsOn": "ConvoLinkIAMRole"
         },
         "CreateConvoLinkResolver": {
             "Type": "AWS::AppSync::Resolver",
