@@ -81,7 +81,7 @@
 		"authcognito1dccd7dc": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181123091314-deployment/amplify-cfn-templates/auth/cognito1dccd7dc-cloudformation-template.yml",
+				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20190215111502-deployment/amplify-cfn-templates/auth/cognito1dccd7dc-cloudformation-template.yml",
 				"Parameters": {
 					"identityPoolName": "cognito1dccd7dc_identitypool_1dccd7dc",
 					"allowUnauthenticatedIdentities": true,
@@ -139,14 +139,14 @@
 							"Arn"
 						]
 					},
-					"env": "dev"
+					"env": "test"
 				}
 			}
 		},
 		"analyticschatqlreact": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181123091314-deployment/amplify-cfn-templates/analytics/pinpoint-cloudformation-template.json",
+				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20190215111502-deployment/amplify-cfn-templates/analytics/pinpoint-cloudformation-template.json",
 				"Parameters": {
 					"appName": "chatqlreact",
 					"roleName": "pinpointLambdaRoleb9ce05bf",
@@ -166,14 +166,14 @@
 							"Arn"
 						]
 					},
-					"env": "dev"
+					"env": "test"
 				}
 			}
 		},
 		"apichatqlreact": {
 			"Type": "AWS::CloudFormation::Stack",
 			"Properties": {
-				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20181123091314-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+				"TemplateURL": "https://s3.amazonaws.com/chatql-react-20190215111502-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"Parameters": {
 					"AppSyncApiName": "chatqlreact",
 					"AuthCognitoUserPoolId": {
@@ -182,11 +182,11 @@
 							"Outputs.UserPoolId"
 						]
 					},
-					"schemaGraphql": "s3://chatql-react-20181123091314-deployment/amplify-appsync-files/schema.graphql.1542999046892",
-					"ResolverBucket": "chatql-react-20181123091314-deployment",
+					"schemaGraphql": "s3://chatql-react-20190215111502-deployment/amplify-appsync-files/schema.graphql.1550258203501",
+					"ResolverBucket": "chatql-react-20190215111502-deployment",
 					"ResolverRootKey": "amplify-appsync-files",
-					"DeploymentTimestamp": "1542999046892",
-					"env": "dev"
+					"DeploymentTimestamp": "1550258203501",
+					"env": "test"
 				}
 			}
 		}

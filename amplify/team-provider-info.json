@@ -32,5 +32,22 @@
                 "cognito1dccd7dc": {}
             }
         }
+    },
+    "test": {
+        "awscloudformation": {
+            "AuthRoleName": "chatql-react-20190215111502-authRole",
+            "UnauthRoleArn": "arn:aws:iam::382786123233:role/chatql-react-20190215111502-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::382786123233:role/chatql-react-20190215111502-authRole",
+            "Region": "us-west-2",
+            "DeploymentBucketName": "chatql-react-20190215111502-deployment",
+            "UnauthRoleName": "chatql-react-20190215111502-unauthRole",
+            "StackName": "chatql-react-20190215111502",
+            "StackId": "arn:aws:cloudformation:us-west-2:382786123233:stack/chatql-react-20190215111502/fedd2dc0-3155-11e9-b20b-0685e3189192"
+        },
+        "categories": {
+            "auth": {
+                "cognito1dccd7dc": {}
+            }
+        }
     }
 }
