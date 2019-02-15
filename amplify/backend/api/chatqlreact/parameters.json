@@ -6,8 +6,8 @@
             "Outputs.UserPoolId"
         ]
     },
-    "schemaGraphql": "s3://chatql-react-20181123145523-deployment/amplify-appsync-files/schema.graphql.1543013823739",
-    "ResolverBucket": "chatql-react-20181123145523-deployment",
+    "schemaGraphql": "s3://chatql-react-20190215112614-deployment/amplify-appsync-files/schema.graphql.1550259181911",
+    "ResolverBucket": "chatql-react-20190215112614-deployment",
     "ResolverRootKey": "amplify-appsync-files",
-    "DeploymentTimestamp": "1543013823739"
+    "DeploymentTimestamp": "1550259181911"
 }
