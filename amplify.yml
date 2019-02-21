@@ -4,8 +4,6 @@ backend:
     build:
       commands:
         - amplify --version
-        - npm install -g @aws-amplify/cli@multienv
-        - amplify --version
         - '# Get Amplify CLI Cloud-Formation stack info from environment cache'
         - export STACKINFO="$(envCache --get stackInfo)"
         - '# Execute Amplify CLI with the helper script'
