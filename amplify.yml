@@ -6,6 +6,7 @@ backend:
         - amplify --version
         - cat ~/.aws/config
         - echo "[default]\nregion=ap-south-1" > ~/.aws/config
+        - cat ~/.aws/config
         - cat ~/.aws/credentials
         - '# Get Amplify CLI Cloud-Formation stack info from environment cache'
         - export STACKINFO="$(envCache --get stackInfo)"
