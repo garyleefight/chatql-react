@@ -49,22 +49,5 @@
                 "cognito1dccd7dc": {}
             }
         }
-    },
-    "mumbai": {
-        "awscloudformation": {
-            "AuthRoleName": "chatql-react-20190221112134-authRole",
-            "UnauthRoleArn": "arn:aws:iam::382786123233:role/chatql-react-20190221112134-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::382786123233:role/chatql-react-20190221112134-authRole",
-            "Region": "ap-south-1",
-            "DeploymentBucketName": "chatql-react-20190221112134-deployment",
-            "UnauthRoleName": "chatql-react-20190221112134-unauthRole",
-            "StackName": "chatql-react-20190221112134",
-            "StackId": "arn:aws:cloudformation:ap-south-1:382786123233:stack/chatql-react-20190221112134/e9c8da80-360d-11e9-b2ae-02bc7d16c3bc"
-        },
-        "categories": {
-            "auth": {
-                "cognito1dccd7dc": {}
-            }
-        }
     }
 }
